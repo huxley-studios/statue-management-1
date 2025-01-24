@@ -1,5 +1,5 @@
-import { getServerSession } from "next-auth/next"
-import { redirect } from "next/navigation"
+import OrderList from './components/OrderList'
+import GiftCardList from './components/GiftCardList'
 
 export default async function Dashboard() {
   const session = await getServerSession()
@@ -14,11 +14,11 @@ export default async function Dashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="bg-white p-6 rounded-lg shadow">
           <h2 className="text-xl font-semibold mb-2">Direct Orders</h2>
-          {/* Order list will go here */}
+          <OrderList />
         </div>
         <div className="bg-white p-6 rounded-lg shadow">
           <h2 className="text-xl font-semibold mb-2">Gift Cards</h2>
-          {/* Gift card list will go here */}
+          <GiftCardList />
         </div>
       </div>
     </main>
