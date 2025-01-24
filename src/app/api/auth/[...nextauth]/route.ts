@@ -1,9 +1,13 @@
-import { Auth } from "@auth/core"
-import Google from "@auth/core/providers/google"
+import NextAuth from 'next-auth'
+import GoogleProvider from 'next-auth/providers/google'
 
-export const { GET, POST } = Auth({
-  providers: [Google({
-    clientId: process.env.GOOGLE_CLIENT_ID,
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-  })]
+const handler = NextAuth({
+  providers: [
+    GoogleProvider({
+      clientId: process.env.GOOGLE_ID ?? '',
+      clientSecret: process.env.GOOGLE_SECRET ?? '',
+    }),
+  ],
 })
+
+export { handler as GET, handler as POST }
