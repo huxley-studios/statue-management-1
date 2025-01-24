@@ -1,20 +1,16 @@
-import React from 'react';
-
-interface Order {
-  _id: string;
-  type: 'direct' | 'gift_card';
-  status: string;
-  size: string;
-  numberOfPeople: number;
-}
+import StatusUpdate from './StatusUpdate';
 
 export default function OrderList() {
   const [orders, setOrders] = React.useState<Order[]>([]);
-
-  React.useEffect(() => {
+  
+  const refreshOrders = () => {
     fetch('/api/orders')
       .then(res => res.json())
       .then(data => setOrders(data));
+  };
+
+  React.useEffect(() => {
+    refreshOrders();
   }, []);
 
   return (
@@ -22,10 +18,11 @@ export default function OrderList() {
       {orders.map(order => (
         <div key={order._id} className="border p-4 rounded">
           <h3>Order #{order._id.slice(-4)}</h3>
-          <p>Type: {order.type}</p>
-          <p>Status: {order.status}</p>
-          <p>Size: {order.size}</p>
-          <p>People: {order.numberOfPeople}</p>
+          <StatusUpdate 
+            orderId={order._id}
+            currentStatus={order.status}
+            onUpdate={refreshOrders}
+          />
         </div>
       ))}
     </div>
