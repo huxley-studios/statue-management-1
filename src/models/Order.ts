@@ -1,4 +1,5 @@
 import mongoose from 'mongoose';
+import { sendOrderUpdate } from '@/lib/email';
 
 const OrderSchema = new mongoose.Schema({
   type: { type: String, enum: ['direct', 'gift_card'], required: true },
@@ -21,6 +22,12 @@ const OrderSchema = new mongoose.Schema({
     }
   },
   createdAt: { type: Date, default: Date.now }
+});
+
+OrderSchema.post('findOneAndUpdate', async function(doc) {
+  if (doc.status) {
+    await sendOrderUpdate(doc._id, doc.status);
+  }
 });
 
 export default mongoose.models.Order || mongoose.model('Order', OrderSchema);
