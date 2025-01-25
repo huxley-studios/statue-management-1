@@ -1,14 +1,23 @@
-import { getServerSession } from "next-auth/next"
-import { redirect } from "next/navigation"
+'use client'
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
 import OrderList from './components/OrderList'
 import GiftCardList from './components/GiftCardList'
 
-export default async function Dashboard() {
-  const session = await getServerSession()
-  
-  if (!session) {
-    redirect('/api/auth/signin')
-  }
+export default function Dashboard() {
+  const router = useRouter()
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const token = localStorage.getItem('token')
+    if (!token) {
+      router.push('/login')
+    } else {
+      setLoading(false)
+    }
+  }, [router])
+
+  if (loading) return <div>Loading...</div>
 
   return (
     <main className="p-8">
