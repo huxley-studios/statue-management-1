@@ -1,12 +1,19 @@
 import { NextResponse } from 'next/server'
+import { hash } from 'bcryptjs'
 import connectDB from '@/lib/mongodb'
 import User from '@/models/User'
-import { hash } from 'bcryptjs'
+
+export async function GET() {
+  await connectDB()
+  const users = await User.find().select('-password')
+  return NextResponse.json(users)
+}
 
 export async function POST(req: Request) {
   await connectDB()
   const { email, password, isAdmin } = await req.json()
   const hashedPassword = await hash(password, 12)
   const user = await User.create({ email, password: hashedPassword, isAdmin })
-  return NextResponse.json(user)
+  const { password: _, ...userWithoutPassword } = user.toObject()
+  return NextResponse.json(userWithoutPassword)
 }
