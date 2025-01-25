@@ -10,16 +10,16 @@ export async function POST(req: Request) {
       private_key: process.env.GOOGLE_PRIVATE_KEY
     },
     scopes: ['https://www.googleapis.com/auth/drive.file']
-  });
+  })
 
-  const drive = google.drive({ version: 'v3', auth });
+  const drive = google.drive({ version: 'v3', auth })
   
   const folder = await drive.files.create({
     requestBody: {
       name: `Order-${orderId}`,
       mimeType: 'application/vnd.google-apps.folder'
     }
-  });
+  })
 
-  return NextResponse.json({ folderId: folder.data.id });
+  return NextResponse.json({ folderId: folder.data.id })
 }
