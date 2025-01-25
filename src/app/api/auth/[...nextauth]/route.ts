@@ -1,34 +1,34 @@
-import { NextResponse } from 'next/server'
+import NextAuth from 'next-auth'
+import CredentialsProvider from 'next-auth/providers/credentials'
+import { compare } from 'bcryptjs'
 import connectDB from '@/lib/mongodb'
 import User from '@/models/User'
-import { hash } from 'bcryptjs'
 
-export async function GET() {
-  try {
-    await connectDB()
-    
-    // Check if admin already exists
-    const existingAdmin = await User.findOne({ isAdmin: true })
-    if (existingAdmin) {
-      return NextResponse.json({ message: "Admin already exists" })
-    }
-
-    const hashedPassword = await hash("Ayspn1qt1.", 12)
-    const user = await User.create({ 
-      email: "alan@huxleystudios.com.au", 
-      password: hashedPassword, 
-      isAdmin: true 
+const handler = NextAuth({
+  providers: [
+    CredentialsProvider({
+      credentials: {
+        email: { label: "Email", type: "email" },
+        password: { label: "Password", type: "password" }
+      },
+      authorize: async (credentials) => {
+        try {
+          if (!credentials?.email || !credentials?.password) return null
+          
+          await connectDB()
+          const user = await User.findOne({ email: credentials.email })
+          if (!user) return null
+          
+          const isValid = await compare(credentials.password, user.password)
+          if (!isValid) return null
+          
+          return { id: user._id, email: user.email, isAdmin: user.isAdmin }
+        } catch (error) {
+          return null
+        }
+      }
     })
-    
-    // Remove sensitive info
-    const safeUser = {
-      email: user.email,
-      isAdmin: user.isAdmin,
-      id: user._id
-    }
-    
-    return NextResponse.json(safeUser)
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 })
-  }
-}
+  ]
+})
+
+export { handler as GET, handler as POST }
