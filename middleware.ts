@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { verify } from 'jsonwebtoken'
 
-const SECRET_KEY = process.env.JWT_SECRET || 'your-secret-key'
+const SECRET_KEY = process.env.JWT_SECRET!
 
 export function middleware(req: Request) {
   const token = req.headers.get('authorization')?.split(' ')[1]
