@@ -14,16 +14,13 @@ const handler = NextAuth({
       authorize: async (credentials) => {
         try {
           if (!credentials?.email || !credentials?.password) return null
-          
           await connectDB()
           const user = await User.findOne({ email: credentials.email })
           if (!user) return null
-          
           const isValid = await compare(credentials.password, user.password)
           if (!isValid) return null
-          
           return { id: user._id, email: user.email, isAdmin: user.isAdmin }
-        } catch (error) {
+        } catch {
           return null
         }
       }
