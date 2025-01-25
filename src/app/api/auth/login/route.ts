@@ -4,7 +4,7 @@ import { compare } from 'bcryptjs'
 import connectDB from '@/lib/mongodb'
 import User from '@/models/User'
 
-const SECRET_KEY = process.env.JWT_SECRET || 'your-secret-key'
+const SECRET_KEY = process.env.JWT_SECRET!
 
 export async function POST(req: Request) {
   const { email, password } = await req.json()
