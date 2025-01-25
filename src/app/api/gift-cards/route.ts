@@ -1,16 +1,26 @@
-import { NextResponse } from 'next/server'
+import { NextResponse, NextRequest } from 'next/server'
 import connectDB from '@/lib/mongodb'
 import GiftCard from '@/models/GiftCard'
 
-export async function GET() {
-  await connectDB()
-  const giftCards = await GiftCard.find().populate('orderId').sort({ createdAt: -1 })
-  return NextResponse.json(giftCards)
+export async function GET(
+ request: NextRequest,
+ { params }: { params: { code: string } }
+) {
+ await connectDB()
+ const giftCard = await GiftCard.findOne({ activationCode: params.code })
+ return NextResponse.json(giftCard)
 }
 
-export async function POST(req: Request) {
-  await connectDB()
-  const data = await req.json()
-  const giftCard = await GiftCard.create(data)
-  return NextResponse.json(giftCard)
+export async function PUT(
+ request: NextRequest, 
+ { params }: { params: { code: string } }
+) {
+ await connectDB()
+ const data = await request.json()
+ const giftCard = await GiftCard.findOneAndUpdate(
+   { activationCode: params.code },
+   data,
+   { new: true }
+ )
+ return NextResponse.json(giftCard)
 }
